@@ -1,16 +1,23 @@
-﻿namespace Xadrez_Console.tabuleiro
+﻿using System.Xml;
+
+namespace Xadrez_Console.tabuleiro
 {
     class Tabuleiro
     {
         public int Linhas { get; set; }
         public int Colunas { get; set; }
-        private Peca[,] Pecas { get; set; }  // Não preciso do Get/Set pq é private. Vou deixar aqui pra ver se interfere em algo no futuro
+        private Peca[,] _pecas;
 
         public Tabuleiro(int linhas, int colunas)
         {
             Linhas = linhas;
             Colunas = colunas;
-            Pecas = new Peca[linhas, colunas];
+            _pecas = new Peca[linhas, colunas];
+        }
+
+        public Peca Peca(int linha, int coluna)
+        {
+            return _pecas[linha, coluna];
         }
     }
 }

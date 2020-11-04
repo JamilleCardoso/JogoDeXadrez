@@ -13,6 +13,6 @@
             Cor = cor;            
             Tabuleiro = tabuleiro;
             QtdeMovimentos = 0;
-        }
+        }        
     }
 }
