@@ -1,6 +1,4 @@
-﻿using System.Xml;
-
-namespace Xadrez_Console.tabuleiro
+﻿namespace Xadrez_Console.tabuleiro
 {
     class Tabuleiro
     {
@@ -20,9 +18,39 @@ namespace Xadrez_Console.tabuleiro
             return _pecas[linha, coluna];
         }
 
+        public Peca Peca(Posicao posicao)
+        {
+            return _pecas[posicao.Linha, posicao.Coluna];
+        }
+
+        public bool ExistePeca(Posicao posicao)
+        {
+            ValidarPosicao(posicao);
+            return (Peca(posicao) != null);
+        }
+
         public void ColocarPeca(Peca peca, Posicao posicao)
         {
+            if (ExistePeca(posicao))
+            {
+                throw new TabuleiroException($"Já existe uma peça nesta posição ({posicao.Linha}, {posicao.Coluna})");
+            }
+            // Não precisa do else pq o throw corta a execução
             _pecas[posicao.Linha, posicao.Coluna] = peca;
+            peca.Posicao = posicao;
+        }
+
+        public bool PosicaoValida(Posicao posicao)
+        {
+            return (posicao.Linha >= 0 && posicao.Linha < Linhas && posicao.Coluna >= 0 && posicao.Coluna < Colunas);
+        }
+
+        public void ValidarPosicao(Posicao posicao)
+        {
+            if (!PosicaoValida(posicao))
+            {
+                throw new TabuleiroException("Posição inválida!");
+            }
         }
     }
 }

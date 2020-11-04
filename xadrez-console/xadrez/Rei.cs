@@ -1,6 +1,6 @@
 ﻿using Xadrez_Console.tabuleiro;
 
-namespace xadrez_console.xadrez
+namespace Xadrez_Console.xadrez
 {
     class Rei : Peca
     {
