@@ -33,7 +33,7 @@
         {
             if (ExistePeca(posicao))
             {
-                throw new TabuleiroException($"Já existe uma peça nesta posição ({posicao.Linha}, {posicao.Coluna})");
+                throw new TabuleiroException($"Já existe uma peça nesta posição ({posicao.Linha}, {posicao.Coluna}");
             }
             // Não precisa do else pq o throw corta a execução
             _pecas[posicao.Linha, posicao.Coluna] = peca;
