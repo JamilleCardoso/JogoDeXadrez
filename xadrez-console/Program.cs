@@ -29,9 +29,13 @@ namespace Xadrez_Console
             finally
             {
                 Console.ReadLine();
-            }          
+            }
 
-            
+            PosicaoXadrez posx = new PosicaoXadrez('a', 2);
+            Console.WriteLine(posx.ToPosicao());
+            Console.ReadLine();
+
+
         }
     }
 }
