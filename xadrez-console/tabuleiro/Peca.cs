@@ -13,6 +13,11 @@
             Tabuleiro = tabuleiro;
             QtdeMovimentos = 0;
             Posicao = null;
-        }        
+        }    
+        
+        public void IncrementarQtdeMovimentos()
+        {
+            QtdeMovimentos++;
+        }
     }
 }

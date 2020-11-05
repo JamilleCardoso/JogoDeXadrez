@@ -1,5 +1,6 @@
 ﻿using System;
 using Xadrez_Console.tabuleiro;
+using Xadrez_Console.xadrez;
 
 namespace Xadrez_Console
 {
@@ -31,6 +32,14 @@ namespace Xadrez_Console
                 Console.Write(" " + (Char)(0065+col));
             }
 
+        }
+
+        public static PosicaoXadrez LerPosicaoXadrez()
+        {
+            string pos = Console.ReadLine();
+            char coluna = Char.ToUpper(pos[0]);
+            int linha = int.Parse(pos[1] + "");  // Coloco + "" para forçar a conversão para string (Parse trabalha com string, e pos[] retorna char
+            return new PosicaoXadrez(coluna, linha);
         }
 
         public static void ImprimirPeca(Peca peca)
