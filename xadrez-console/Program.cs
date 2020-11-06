@@ -17,11 +17,7 @@ namespace Xadrez_Console
                     try
                     {
                         Console.Clear();
-                        Tela.ImprimirTabuleiro(partida.Tabuleiro);
-                        Console.WriteLine();
-                        Console.WriteLine("Turno: " + partida.Turno);
-                        Console.Write("Aguardando jogada: ");
-                        Tela.ImprimeJogadorNaCor(partida.JogadorAtual);
+                        Tela.ImprimirPartida(partida);
 
                         Console.WriteLine();
                         Console.Write("Origem: ");
@@ -29,12 +25,14 @@ namespace Xadrez_Console
                         partida.ValidarPosicaoDeOrigem(origem);
 
                         Console.Clear();
+                        Tela.ImprimirPartida(partida, partida.Tabuleiro.Peca(origem).MovimentosPossiveis());
+                        /* 
                         Tela.ImprimirTabuleiro(partida.Tabuleiro, partida.Tabuleiro.Peca(origem).MovimentosPossiveis());
-
                         Console.WriteLine();
                         Console.WriteLine("Turno: " + partida.Turno);
                         Console.Write("Jogada em andamento: ");
                         Tela.ImprimeJogadorNaCor(partida.JogadorAtual);
+                        */
                         Console.WriteLine();
                         Console.WriteLine("Origem: " + PosicaoXadrez.ToPosicaoXadrez(origem));
                         Console.Write("Destino: ");
@@ -56,10 +54,10 @@ namespace Xadrez_Console
             {
                 Console.WriteLine(e.Message);
             }
-            catch (Exception e)
+            /* catch (Exception e)  Comentei pq quero ser informada dos detalhes erro durante a execução
             {
                 Console.WriteLine(e.Message);
-            }
+            } */
             finally
             {
                 Console.ReadLine();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Xadrez_Console.tabuleiro;
 using Xadrez_Console.xadrez;
 
@@ -6,11 +7,53 @@ namespace Xadrez_Console
 {
     class Tela
     {
-        public static void ImprimirTabuleiro(Tabuleiro tabuleiro)
+        public static void ImprimirPartida(PartidaDeXadrez partida)
         {
-            ImprimirTabuleiro(tabuleiro, null);       
+            ImprimirPartida(partida, null);            
         }
 
+        public static void ImprimirPartida(PartidaDeXadrez partida, bool[,] posicoesPossiveis)
+        {
+            ImprimirTabuleiro(partida.Tabuleiro, posicoesPossiveis);
+            Console.WriteLine();
+            ImprimirPecasCapturadas(partida);
+            Console.WriteLine();
+            Console.WriteLine("Turno: " + partida.Turno);
+            if (posicoesPossiveis == null)
+            {
+                Console.Write("Aguardando jogada: ");
+            }
+            else
+            {
+                Console.Write("Jogada em andamento: ");
+            }            
+            Tela.ImprimeJogadorNaCor(partida.JogadorAtual);
+        }
+
+        private static void ImprimirPecasCapturadas(PartidaDeXadrez partida)
+        {
+            Console.WriteLine("Peças capturadas: ");
+            Console.Write("Brancas: ");
+            ImprimirConjunto(partida.PecasCapturadas(Cor.Branca));
+            Console.WriteLine();
+            Console.Write("Pretas: ");
+            ConsoleColor corAtual = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            ImprimirConjunto(partida.PecasCapturadas(Cor.Preta));
+            Console.ForegroundColor = corAtual;
+            Console.WriteLine();
+        }
+
+        private static void ImprimirConjunto(HashSet<Peca> conjunto)
+        {           
+            Console.Write("[");
+            foreach (Peca peca in conjunto)
+            {
+                Console.Write(peca + " ");
+            }
+            Console.Write("]");            
+        }
+        
         public static void ImprimirTabuleiro(Tabuleiro tabuleiro, bool[,] posicoesPossiveis)
         {
             ConsoleColor corFundoOriginal = Console.BackgroundColor;
@@ -76,7 +119,6 @@ namespace Xadrez_Console
             }
             Console.Write(" ");
         }
-
         public static void ImprimeJogadorNaCor(Cor jogador)
         {
             if (jogador == Cor.Branca)
