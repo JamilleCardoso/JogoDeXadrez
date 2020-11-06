@@ -4,42 +4,70 @@ namespace Xadrez_Console.xadrez
 {
     class PartidaDeXadrez
     {
-        private int _turno;
-        private Cor _jogadorAtual;
+        public int Turno { get; private set; }
+        public Cor JogadorAtual { get ; private set; }
         public Tabuleiro Tabuleiro { get; private set; }
         public bool Terminada { get; private set; }
 
         public PartidaDeXadrez()
         {
             Tabuleiro = new Tabuleiro(8, 8);
-            _turno = 1;
-            _jogadorAtual = Cor.Branca;
+            Turno = 1;
+            JogadorAtual = Cor.Branca;
             ColocarPecas();
             Terminada = false;
-        }              
+        }
 
-        public void ExecutaMovimento(Posicao origem, Posicao destino)
+        private void ExecutaMovimento(Posicao origem, Posicao destino)
         {
-            if (Tabuleiro.Peca(origem).MovimentosPossiveis()[destino.Linha, destino.Coluna])
-            {
-                Peca p = Tabuleiro.RetirarPeca(origem);
-                p.IncrementarQtdeMovimentos();
-                Peca pecaCapturada = Tabuleiro.RetirarPeca(destino);  // será usada posteriormente
-                Tabuleiro.ColocarPeca(p, destino);
-            }
-            else
-            {
-                System.Console.WriteLine("Movimento não permitido");
-            }
-
-
-
-            /*
             Peca p = Tabuleiro.RetirarPeca(origem);
             p.IncrementarQtdeMovimentos();
             Peca pecaCapturada = Tabuleiro.RetirarPeca(destino);  // será usada posteriormente
-            Tabuleiro.ColocarPeca(p, destino);
-            */
+            Tabuleiro.ColocarPeca(p, destino);            
+        }
+
+        public void RealizaJogada(Posicao origem, Posicao destino)
+        {
+            ExecutaMovimento(origem, destino);
+            Turno++;
+            MudaJogador();
+        }
+
+        public void ValidarPosicaoDeOrigem(Posicao origem)
+        {
+            if (Tabuleiro.Peca(origem) == null)
+            {
+                throw new TabuleiroException("Não existe peça nesta posição!");
+            };
+            if (Tabuleiro.Peca(origem).Cor != JogadorAtual)
+            {
+                throw new TabuleiroException("Esta peça não é sua!");
+            };
+            if (!Tabuleiro.Peca(origem).ExistemMovimentosPossiveis())
+            {
+                throw new TabuleiroException("Não existem movimentos possíveis para esta peça!");
+            };           
+        }
+
+        public void ValidarPosicaoDeDestino(Posicao origem, Posicao destino)
+        {
+            if (!Tabuleiro.Peca(origem).PodeMoverPara(destino))
+            {
+                throw new TabuleiroException("Não é possível mover a peça para esta posição!");
+            };            
+        }
+
+
+        private void MudaJogador()
+        {
+            if (JogadorAtual == Cor.Branca)
+            {
+                JogadorAtual = Cor.Preta;
+            }
+            else
+            {
+                JogadorAtual = Cor.Branca;
+            }
         }
 
         private void ColocarPecas()

@@ -1,4 +1,6 @@
-﻿namespace Xadrez_Console.tabuleiro
+﻿using System.Net.Sockets;
+
+namespace Xadrez_Console.tabuleiro
 {
     abstract class Peca
     {
@@ -24,6 +26,27 @@
         {
             Peca peca = Tabuleiro.Peca(posicao);
             return (peca == null) || (peca.Cor != Cor);
+        }
+
+        public virtual bool PodeMoverPara(Posicao destino)
+        {
+            return MovimentosPossiveis()[destino.Linha, destino.Coluna];
+        }
+
+        public bool ExistemMovimentosPossiveis()
+        {            
+            bool[,] mov = MovimentosPossiveis();
+            for (int lin = 0; lin < Tabuleiro.Linhas; lin++)
+            {
+                for (int col = 0; col < Tabuleiro.Colunas; col++)
+                {
+                    if (mov[lin, col])
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public abstract bool[,] MovimentosPossiveis();

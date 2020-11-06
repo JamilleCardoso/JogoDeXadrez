@@ -76,5 +76,20 @@ namespace Xadrez_Console
             }
             Console.Write(" ");
         }
+
+        public static void ImprimeJogadorNaCor(Cor jogador)
+        {
+            if (jogador == Cor.Branca)
+            {
+                Console.Write(jogador);
+            }
+            else
+            {
+                ConsoleColor corAux = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(jogador);
+                Console.ForegroundColor = corAux;
+            }            
+        }
     }
 }
