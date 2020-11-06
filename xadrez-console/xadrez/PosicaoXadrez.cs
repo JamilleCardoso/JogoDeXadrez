@@ -1,4 +1,5 @@
-﻿using Xadrez_Console.tabuleiro;
+﻿using System;
+using Xadrez_Console.tabuleiro;
 
 namespace Xadrez_Console.xadrez
 {
@@ -15,6 +16,10 @@ namespace Xadrez_Console.xadrez
         public Posicao ToPosicao()
         {
             return new Posicao(8 - Linha, Coluna - 'A');
+        }
+        public static PosicaoXadrez ToPosicaoXadrez(Posicao posicao)
+        { 
+            return new PosicaoXadrez((Char)(0065 + posicao.Coluna), (8 - posicao.Linha));
         }
         public override string ToString()
         {

@@ -20,11 +20,26 @@ namespace Xadrez_Console.xadrez
 
         public void ExecutaMovimento(Posicao origem, Posicao destino)
         {
+            if (Tabuleiro.Peca(origem).MovimentosPossiveis()[destino.Linha, destino.Coluna])
+            {
+                Peca p = Tabuleiro.RetirarPeca(origem);
+                p.IncrementarQtdeMovimentos();
+                Peca pecaCapturada = Tabuleiro.RetirarPeca(destino);  // será usada posteriormente
+                Tabuleiro.ColocarPeca(p, destino);
+            }
+            else
+            {
+                System.Console.WriteLine("Movimento não permitido");
+            }
+
+
+
+            /*
             Peca p = Tabuleiro.RetirarPeca(origem);
             p.IncrementarQtdeMovimentos();
             Peca pecaCapturada = Tabuleiro.RetirarPeca(destino);  // será usada posteriormente
             Tabuleiro.ColocarPeca(p, destino);
-
+            */
         }
 
         private void ColocarPecas()
