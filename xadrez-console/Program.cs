@@ -25,14 +25,7 @@ namespace Xadrez_Console
                         partida.ValidarPosicaoDeOrigem(origem);
 
                         Console.Clear();
-                        Tela.ImprimirPartida(partida, partida.Tabuleiro.Peca(origem).MovimentosPossiveis());
-                        /* 
-                        Tela.ImprimirTabuleiro(partida.Tabuleiro, partida.Tabuleiro.Peca(origem).MovimentosPossiveis());
-                        Console.WriteLine();
-                        Console.WriteLine("Turno: " + partida.Turno);
-                        Console.Write("Jogada em andamento: ");
-                        Tela.ImprimeJogadorNaCor(partida.JogadorAtual);
-                        */
+                        Tela.ImprimirPartida(partida, partida.Tabuleiro.Peca(origem).MovimentosPossiveis());                        
                         Console.WriteLine();
                         Console.WriteLine("Origem: " + PosicaoXadrez.ToPosicaoXadrez(origem));
                         Console.Write("Destino: ");
@@ -46,9 +39,9 @@ namespace Xadrez_Console
                         Console.WriteLine(e.Message);
                         Console.ReadLine();
                     }
-                }          
-                
-                               
+                }
+                Console.Clear();
+                Tela.ImprimirPartida(partida);
             }
             catch (TabuleiroException e)
             {

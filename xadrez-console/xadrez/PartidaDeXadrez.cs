@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Security.Permissions;
 using Xadrez_Console.tabuleiro;
 
@@ -52,8 +53,15 @@ namespace Xadrez_Console.xadrez
 
             Xeque = EstaEmXeque(Adversario(JogadorAtual));
 
-            Turno++;
-            MudaJogador();
+            if (TestaXequeMate(Adversario(JogadorAtual)))
+            {
+                Terminada = true;
+            } 
+            else
+            {
+                Turno++;
+                MudaJogador();
+            }            
         }
 
         private void _desfazMovimento(Posicao origem, Posicao destino, Peca pecaCapturada)
@@ -173,6 +181,38 @@ namespace Xadrez_Console.xadrez
             return false;
         }
 
+        private bool TestaXequeMate(Cor cor)
+        {
+            if (!EstaEmXeque(cor))
+            {
+                return false;
+            }
+
+            foreach (Peca peca in PecasEmJogo(cor))
+            {
+                bool[,] movPossiveis = peca.MovimentosPossiveis();
+                for (int linha = 0; linha < Tabuleiro.Linhas; linha++)
+                {
+                    for (int coluna = 0; coluna < Tabuleiro.Colunas; coluna++)
+                    {
+                        if (movPossiveis[linha, coluna])
+                        {
+                            Posicao posicaoOrigem = peca.Posicao;
+                            Posicao posicaoDestino = new Posicao(linha, coluna);
+                            Peca pecaCapturada = ExecutaMovimento(posicaoOrigem, posicaoDestino);
+                            bool testaXeque = EstaEmXeque(cor);
+                            _desfazMovimento(posicaoOrigem, posicaoDestino, pecaCapturada);
+                            if (!testaXeque) // Indica q o movimento retiraria do Chegue
+                            {
+                                return false;
+                            }                            
+                        }
+                    }
+                }
+            }
+            return true;  // Se o Méetodo não foi cortado pelo return false, significa q ainda continuaria em xeque, ou seja, xeque-mate
+        }
+
         public void ColocarNovaPeca(char coluna, int linha, Peca peca)
         {
             Tabuleiro.ColocarPeca(peca, new PosicaoXadrez(coluna, linha).ToPosicao());
@@ -181,6 +221,13 @@ namespace Xadrez_Console.xadrez
         private void ColocarPecas()
         {
             ColocarNovaPeca('C', 1, new Torre(Tabuleiro, Cor.Branca));
+            ColocarNovaPeca('D', 1, new Rei(Tabuleiro, Cor.Branca));
+            ColocarNovaPeca('H', 7, new Torre(Tabuleiro, Cor.Branca));
+
+            ColocarNovaPeca('A', 8, new Rei(Tabuleiro, Cor.Preta));
+            ColocarNovaPeca('B', 8, new Torre(Tabuleiro, Cor.Preta));
+
+            /* ColocarNovaPeca('C', 1, new Torre(Tabuleiro, Cor.Branca));
             ColocarNovaPeca('C', 2, new Torre(Tabuleiro, Cor.Branca));
             ColocarNovaPeca('D', 2, new Torre(Tabuleiro, Cor.Branca));
             ColocarNovaPeca('E', 1, new Torre(Tabuleiro, Cor.Branca));
@@ -193,6 +240,7 @@ namespace Xadrez_Console.xadrez
             ColocarNovaPeca('E', 7, new Torre(Tabuleiro, Cor.Preta));
             ColocarNovaPeca('E', 8, new Torre(Tabuleiro, Cor.Preta));
             ColocarNovaPeca('D', 8, new Rei(Tabuleiro, Cor.Preta));
+            */
         }
     }
 }
