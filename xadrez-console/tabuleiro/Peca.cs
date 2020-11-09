@@ -33,7 +33,7 @@ namespace Xadrez_Console.tabuleiro
             return (peca == null) || (peca.Cor != Cor);
         }
 
-        public virtual bool PodeMoverPara(Posicao destino)
+        public virtual bool MovimentoPossivel(Posicao destino)
         {
             return MovimentosPossiveis()[destino.Linha, destino.Coluna];
         }
