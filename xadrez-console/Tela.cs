@@ -28,6 +28,14 @@ namespace Xadrez_Console
                 Console.Write("Jogada em andamento: ");
             }            
             Tela.ImprimeJogadorNaCor(partida.JogadorAtual);
+            if (partida.Xeque)
+            {
+                Console.WriteLine(" (VOCÊ ESTÁ EM XEQUE!)");
+            }            
+            else
+            {
+                Console.WriteLine();
+            }
         }
 
         private static void ImprimirPecasCapturadas(PartidaDeXadrez partida)

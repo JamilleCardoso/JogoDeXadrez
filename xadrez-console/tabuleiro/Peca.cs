@@ -21,6 +21,11 @@ namespace Xadrez_Console.tabuleiro
         {
             QtdeMovimentos++;
         }
+               
+        public void DecrementarQtdeMovimentos()
+        {
+            QtdeMovimentos--;
+        }
 
         public virtual bool PodeMover(Posicao posicao)
         {
