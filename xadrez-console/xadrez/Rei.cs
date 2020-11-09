@@ -1,12 +1,14 @@
-﻿using Xadrez_Console.tabuleiro;
+﻿using System.Threading;
+using Xadrez_Console.tabuleiro;
 
 namespace Xadrez_Console.xadrez
 {
     class Rei : Peca
     {
-        public Rei(Tabuleiro tabuleiro, Cor cor) : base(tabuleiro, cor)
+        private PartidaDeXadrez _partida;
+        public Rei(Tabuleiro tabuleiro, Cor cor, PartidaDeXadrez partida) : base(tabuleiro, cor)
         {
-
+            _partida = partida;
         }
         public override string ToString()
         {
@@ -20,6 +22,12 @@ namespace Xadrez_Console.xadrez
             {
                 matriz[pos.Linha, pos.Coluna] = true;
             }
+        }
+
+        private bool TestaTorreParaRoque(Posicao posicao)
+        {
+            Peca peca = Tabuleiro.Peca(posicao);
+            return (peca != null) && (peca is Torre) && (peca.Cor == Cor) && (peca.QtdeMovimentos == 0);
         }
 
         public override bool[,] MovimentosPossiveis()
@@ -45,6 +53,37 @@ namespace Xadrez_Console.xadrez
             DefineETestaPosicao(matriz, pos, Posicao.Linha, Posicao.Coluna - 1);
             // Diagonal superior esquerda (noroeste)
             DefineETestaPosicao(matriz, pos, Posicao.Linha - 1, Posicao.Coluna - 1);
+
+            // #JodaEspecial Roque
+
+            if (QtdeMovimentos == 0 && !_partida.Xeque)
+            {
+                // #JodaEspecial RoquePequeno
+                Posicao posTorre = new Posicao(Posicao.Linha, Posicao.Coluna + 3);
+                if (TestaTorreParaRoque(posTorre))
+                {
+                    Posicao p1 = new Posicao(Posicao.Linha, Posicao.Coluna + 1);
+                    Posicao p2 = new Posicao(Posicao.Linha, Posicao.Coluna + 2);
+                    if (Tabuleiro.Peca(p1) == null && Tabuleiro.Peca(p2) == null)
+                    {
+                        matriz[Posicao.Linha, Posicao.Coluna + 2] = true;
+                    }
+                }
+
+                // #JodaEspecial RoqueGrande
+                posTorre.Linha = Posicao.Linha;
+                posTorre.Coluna = Posicao.Coluna - 4;
+                if (TestaTorreParaRoque(posTorre))
+                {
+                    Posicao p1 = new Posicao(Posicao.Linha, Posicao.Coluna - 1);
+                    Posicao p2 = new Posicao(Posicao.Linha, Posicao.Coluna - 2);
+                    Posicao p3 = new Posicao(Posicao.Linha, Posicao.Coluna - 3);
+                    if (Tabuleiro.Peca(p1) == null && Tabuleiro.Peca(p2) == null && Tabuleiro.Peca(p3) == null)
+                    {
+                        matriz[Posicao.Linha, Posicao.Coluna - 2] = true;
+                    }
+                }
+            }
 
             return matriz;
         }
