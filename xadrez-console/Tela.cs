@@ -99,7 +99,7 @@ namespace Xadrez_Console
             for (int col = 0; col < tabuleiro.Colunas; col++)
             {
                 // Console.Write(" " + Char.ConvertFromUtf32(0065+col)); // Também funciona  (65 A maiúsculo, 97 a minúsculo)
-                Console.Write(" " + (Char)(0065 + col));
+                Console.Write(" " +  (Char)(0097 + col));
             }
             Console.WriteLine();
 
@@ -108,7 +108,7 @@ namespace Xadrez_Console
         public static PosicaoXadrez LerPosicaoXadrez()
         {
             string pos = Console.ReadLine();
-            char coluna = Char.ToUpper(pos[0]);
+            char coluna = Char.ToLower(pos[0]);
             int linha = int.Parse(pos[1] + "");  // Coloco + "" para forçar a conversão para string (Parse trabalha com string, e pos[] retorna char
             return new PosicaoXadrez(coluna, linha);
         }

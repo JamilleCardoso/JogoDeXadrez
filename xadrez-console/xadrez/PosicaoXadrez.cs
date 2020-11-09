@@ -10,16 +10,16 @@ namespace Xadrez_Console.xadrez
 
         public PosicaoXadrez(char coluna, int linha)
         {
-            Coluna = coluna;
+            Coluna = Char.ToLower(coluna);
             Linha = linha;
         }
         public Posicao ToPosicao()
         {
-            return new Posicao(8 - Linha, Coluna - 'A');
+            return new Posicao(8 - Linha, Coluna - 'a');
         }
         public static PosicaoXadrez ToPosicaoXadrez(Posicao posicao)
         { 
-            return new PosicaoXadrez((Char)(0065 + posicao.Coluna), (8 - posicao.Linha));
+            return new PosicaoXadrez((Char)(0097 + posicao.Coluna), (8 - posicao.Linha));
         }
         public override string ToString()
         {
