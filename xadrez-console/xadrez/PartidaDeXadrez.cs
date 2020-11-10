@@ -85,19 +85,6 @@ namespace Xadrez_Console.xadrez
                 throw new TabuleiroException("Você não pode se colocar em xeque!");
             }
 
-            Peca p = Tabuleiro.Peca(destino);
-
-            // #JogadaEspecial Promocao
-            // Como o Peao não anda pra trás, não preciso testar a cor
-            if (p is Peao && (destino.Linha == 0 || destino.Linha == Tabuleiro.Linhas - 1)) 
-            {
-                p = Tabuleiro.RetirarPeca(destino);
-                _pecas.Remove(p);
-                Peca dama = new Dama(Tabuleiro, p.Cor);
-                Tabuleiro.ColocarPeca(dama, destino);
-                _pecas.Add(dama);
-            }
-
             Xeque = EstaEmXeque(Adversario(JogadorAtual));
 
             if (TestaXequeMate(Adversario(JogadorAtual)))
@@ -110,7 +97,8 @@ namespace Xadrez_Console.xadrez
                 MudaJogador();
             }
 
-            // #JogadaEspecial EnPassant            
+            // #JogadaEspecial EnPassant
+            Peca p = Tabuleiro.Peca(destino);
             // Se Peao e andou 2 casas é pq é o 1º movimento
             if (p is Peao && (destino.Linha == origem.Linha - 2 || destino.Linha == origem.Linha + 2))
             {
