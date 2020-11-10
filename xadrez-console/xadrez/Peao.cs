@@ -4,16 +4,17 @@ namespace Xadrez_Console.xadrez
 {
     class Peao : Peca
     {
-        public Peao(Tabuleiro tabuleiro, Cor cor) : base(tabuleiro, cor)
+        private PartidaDeXadrez _partida;
+        public Peao(Tabuleiro tabuleiro, Cor cor, PartidaDeXadrez partida) : base(tabuleiro, cor)
         {
-
+            _partida = partida;
         }
         public override string ToString()
         {
             return "P";
         }
 
-        private bool ExiteInimigo(Posicao posicao)
+        private bool ExisteInimigo(Posicao posicao)
         {
             Peca peca = Tabuleiro.Peca(posicao);
             return peca != null && peca.Cor != Cor;
@@ -48,14 +49,29 @@ namespace Xadrez_Console.xadrez
 
                 // O Peão só captura peças laterais, portando ando para a lateral se tiver Inimigo
                 pos.DefinirValores(Posicao.Linha - 1, Posicao.Coluna + 1);
-                if (Tabuleiro.PosicaoValida(pos) && ExiteInimigo(pos))
+                if (Tabuleiro.PosicaoValida(pos) && ExisteInimigo(pos))
                 {
                     matriz[pos.Linha, pos.Coluna] = true;
                 }
                 pos.DefinirValores(Posicao.Linha - 1, Posicao.Coluna - 1);
-                if (Tabuleiro.PosicaoValida(pos) && ExiteInimigo(pos))
+                if (Tabuleiro.PosicaoValida(pos) && ExisteInimigo(pos))
                 {
                     matriz[pos.Linha, pos.Coluna] = true;
+                }
+                // #JogadaEspecial EnPassant
+                if (Posicao.Linha == 3)
+                {
+                    pos.DefinirValores(Posicao.Linha, Posicao.Coluna - 1);
+                    if (Tabuleiro.PosicaoValida(pos) && ExisteInimigo(pos) && Tabuleiro.Peca(pos) == _partida.VulneravemEnPassant)
+                    {
+                        matriz[Posicao.Linha - 1, Posicao.Coluna - 1] = true;                        
+                    }
+
+                    pos.DefinirValores(Posicao.Linha, Posicao.Coluna + 1);
+                    if (Tabuleiro.PosicaoValida(pos) && ExisteInimigo(pos) && Tabuleiro.Peca(pos) == _partida.VulneravemEnPassant)
+                    {
+                        matriz[Posicao.Linha - 1, Posicao.Coluna + 1] = true;                        
+                    }
                 }
             }
             else
@@ -74,18 +90,31 @@ namespace Xadrez_Console.xadrez
 
                 // O Peão só captura peças laterais, portando ando para a lateral se tiver Inimigo
                 pos.DefinirValores(Posicao.Linha + 1, Posicao.Coluna + 1);
-                if (Tabuleiro.PosicaoValida(pos) && ExiteInimigo(pos))
+                if (Tabuleiro.PosicaoValida(pos) && ExisteInimigo(pos))
                 {
                     matriz[pos.Linha, pos.Coluna] = true;
                 }
                 pos.DefinirValores(Posicao.Linha + 1, Posicao.Coluna - 1);
-                if (Tabuleiro.PosicaoValida(pos) && ExiteInimigo(pos))
+                if (Tabuleiro.PosicaoValida(pos) && ExisteInimigo(pos))
                 {
                     matriz[pos.Linha, pos.Coluna] = true;
                 }
+                // #JogadaEspecial EnPassant
+                if (Posicao.Linha == 4)
+                {
+                    pos.DefinirValores(Posicao.Linha, Posicao.Coluna - 1);
+                    if (Tabuleiro.PosicaoValida(pos) && ExisteInimigo(pos) && Tabuleiro.Peca(pos) == _partida.VulneravemEnPassant)
+                    {
+                        matriz[Posicao.Linha + 1, Posicao.Coluna - 1] = true;                        
+                    }
+
+                    pos.DefinirValores(Posicao.Linha, Posicao.Coluna + 1);
+                    if (Tabuleiro.PosicaoValida(pos) && ExisteInimigo(pos) && Tabuleiro.Peca(pos) == _partida.VulneravemEnPassant)
+                    {
+                        matriz[Posicao.Linha + 1, Posicao.Coluna + 1] = true;                        
+                    }
+                }
             }
-
-
 
             return matriz;
         }

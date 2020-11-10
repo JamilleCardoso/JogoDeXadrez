@@ -1,21 +1,19 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Security.Permissions;
+﻿using System.Collections.Generic;
 using Xadrez_Console.tabuleiro;
 
 namespace Xadrez_Console.xadrez
 {
     class PartidaDeXadrez
     {
+        private HashSet<Peca> _pecas;
+        private HashSet<Peca> _capturadas;
+        public Peca VulneravemEnPassant { get; private set; }
         public int Turno { get; private set; }
         public Cor JogadorAtual { get; private set; }
         public Tabuleiro Tabuleiro { get; private set; }
         public bool Terminada { get; private set; }
         public bool Xeque { get; private set; }
-        private HashSet<Peca> _pecas;
-        private HashSet<Peca> _capturadas;
+
 
         public PartidaDeXadrez()
         {
@@ -24,9 +22,10 @@ namespace Xadrez_Console.xadrez
             JogadorAtual = Cor.Branca;
             _pecas = new HashSet<Peca>();
             _capturadas = new HashSet<Peca>();
+            VulneravemEnPassant = null;
             Terminada = false;
             Xeque = false;
-            ColocarPecas();            
+            ColocarPecas();
         }
 
         private Peca ExecutaMovimento(Posicao origem, Posicao destino)
@@ -41,11 +40,11 @@ namespace Xadrez_Console.xadrez
             }
 
             // #JogadaEspecial RoquePequeno
-            if (p is Rei && destino.Linha == origem.Linha && destino.Coluna == origem.Coluna + 2) 
+            if (p is Rei && destino.Linha == origem.Linha && destino.Coluna == origem.Coluna + 2)
             {
                 Posicao origemTorre = new Posicao(origem.Linha, origem.Coluna + 3);
                 Posicao destinoTorre = new Posicao(origem.Linha, origem.Coluna + 1);
-                ExecutaMovimento(origemTorre, destinoTorre);
+                ExecutaMovimento(origemTorre, destinoTorre); // Usei a recursividade ??
                 /* 
                 Peca torre = Tabuleiro.RetirarPeca(origemTorre);
                 torre.IncrementarQtdeMovimentos();
@@ -58,7 +57,7 @@ namespace Xadrez_Console.xadrez
             {
                 Posicao origemTorre = new Posicao(origem.Linha, origem.Coluna - 4);
                 Posicao destinoTorre = new Posicao(origem.Linha, origem.Coluna - 1);
-                ExecutaMovimento(origemTorre, destinoTorre);
+                ExecutaMovimento(origemTorre, destinoTorre); // Usei a recursividade ??
                 /* 
                 Peca torre = Tabuleiro.RetirarPeca(origemTorre);
                 torre.IncrementarQtdeMovimentos();
@@ -66,6 +65,13 @@ namespace Xadrez_Console.xadrez
                 */
             }
 
+            // #JogadaEspecial EmPassant  
+            // Se Peao andou da diagonal e não capturou ninguém é pq é EnPassant
+            if (p is Peao && destino.Coluna != origem.Coluna && pecaCapturada == null) 
+            {
+                pecaCapturada = Tabuleiro.RetirarPeca(VulneravemEnPassant.Posicao); // Fiz este código bem diferente ??
+                _capturadas.Add(pecaCapturada);                
+            }
 
             return pecaCapturada;
         }
@@ -84,20 +90,32 @@ namespace Xadrez_Console.xadrez
             if (TestaXequeMate(Adversario(JogadorAtual)))
             {
                 Terminada = true;
-            } 
+            }
             else
             {
                 Turno++;
                 MudaJogador();
-            }            
+            }
+
+            // #JogadaEspecial EnPassant
+            Peca p = Tabuleiro.Peca(destino);
+            // Se Peao e andou 2 casas é pq é o 1º movimento
+            if (p is Peao && (destino.Linha == origem.Linha - 2 || destino.Linha == origem.Linha + 2))
+            {
+                VulneravemEnPassant = p;
+            }
+            else
+            {
+                VulneravemEnPassant = null;
+            }
         }
 
         private void _desfazMovimento(Posicao origem, Posicao destino, Peca pecaCapturada)
         {
-            Peca p = Tabuleiro.RetirarPeca(destino);            
-            p.DecrementarQtdeMovimentos();            
+            Peca p = Tabuleiro.RetirarPeca(destino);
+            p.DecrementarQtdeMovimentos();
             if (pecaCapturada != null)
-            {                
+            {
                 Tabuleiro.ColocarPeca(pecaCapturada, destino);
                 _capturadas.Remove(pecaCapturada);
             }
@@ -108,7 +126,7 @@ namespace Xadrez_Console.xadrez
             {
                 Posicao origemTorre = new Posicao(origem.Linha, origem.Coluna + 3);
                 Posicao destinoTorre = new Posicao(origem.Linha, origem.Coluna + 1);
-                _desfazMovimento(origemTorre, destinoTorre, null);
+                _desfazMovimento(origemTorre, destinoTorre, null); // Usei a recursividade ??
                 /* 
                 Peca torre = Tabuleiro.RetirarPeca(destinoTorre);
                 torre.DecrementarQtdeMovimentos();
@@ -121,12 +139,19 @@ namespace Xadrez_Console.xadrez
             {
                 Posicao origemTorre = new Posicao(origem.Linha, origem.Coluna - 4);
                 Posicao destinoTorre = new Posicao(origem.Linha, origem.Coluna - 1);
-                _desfazMovimento(origemTorre, destinoTorre, null);
+                _desfazMovimento(origemTorre, destinoTorre, null); // Usei a recursividade ??
                 /* 
                 Peca torre = Tabuleiro.RetirarPeca(destinoTorre);
                 torre.DecrementarQtdeMovimentos();
                 Tabuleiro.ColocarPeca(torre, origemTorre);
                 */
+            }
+
+            // #JogadaEspecial EmPassant              
+            if (p is Peao && destino.Coluna != origem.Coluna && pecaCapturada == VulneravemEnPassant)
+            {
+                Peca peao = Tabuleiro.RetirarPeca(destino);
+                Tabuleiro.ColocarPeca(peao, new Posicao(origem.Linha, destino.Coluna));  // Fiz diferente ??     
             }
         }
 
@@ -194,7 +219,7 @@ namespace Xadrez_Console.xadrez
             return aux;
         }
 
-        private Cor Adversario (Cor cor)
+        private Cor Adversario(Cor cor)
         {
             if (cor == Cor.Branca)
             {
@@ -203,10 +228,10 @@ namespace Xadrez_Console.xadrez
             else
             {
                 return Cor.Branca;
-            }            
+            }
         }
 
-        private Peca _rei (Cor cor)
+        private Peca _rei(Cor cor)
         {
             foreach (Peca peca in PecasEmJogo(cor))
             {
@@ -226,7 +251,7 @@ namespace Xadrez_Console.xadrez
                 throw new TabuleiroException("Rei " + cor + " não encontrado no tabuleiro");
             }
             foreach (Peca pecaAdv in PecasEmJogo(Adversario(cor)))
-            {                
+            {
                 if (pecaAdv.MovimentosPossiveis()[rei.Posicao.Linha, rei.Posicao.Coluna])
                 {
                     return true;
@@ -259,7 +284,7 @@ namespace Xadrez_Console.xadrez
                             if (!testaXeque) // Indica q o movimento retiraria do Chegue
                             {
                                 return false;
-                            }                            
+                            }
                         }
                     }
                 }
@@ -282,14 +307,14 @@ namespace Xadrez_Console.xadrez
             ColocarNovaPeca('F', 1, new Bispo(Tabuleiro, Cor.Branca));
             ColocarNovaPeca('G', 1, new Cavalo(Tabuleiro, Cor.Branca));
             ColocarNovaPeca('H', 1, new Torre(Tabuleiro, Cor.Branca));
-            ColocarNovaPeca('A', 2, new Peao(Tabuleiro, Cor.Branca));
-            ColocarNovaPeca('B', 2, new Peao(Tabuleiro, Cor.Branca));
-            ColocarNovaPeca('C', 2, new Peao(Tabuleiro, Cor.Branca));
-            ColocarNovaPeca('D', 2, new Peao(Tabuleiro, Cor.Branca));
-            ColocarNovaPeca('E', 2, new Peao(Tabuleiro, Cor.Branca));
-            ColocarNovaPeca('F', 2, new Peao(Tabuleiro, Cor.Branca));
-            ColocarNovaPeca('G', 2, new Peao(Tabuleiro, Cor.Branca));
-            ColocarNovaPeca('H', 2, new Peao(Tabuleiro, Cor.Branca));
+            ColocarNovaPeca('A', 2, new Peao(Tabuleiro, Cor.Branca, this));
+            ColocarNovaPeca('B', 2, new Peao(Tabuleiro, Cor.Branca, this));
+            ColocarNovaPeca('C', 2, new Peao(Tabuleiro, Cor.Branca, this));
+            ColocarNovaPeca('D', 2, new Peao(Tabuleiro, Cor.Branca, this));
+            ColocarNovaPeca('E', 2, new Peao(Tabuleiro, Cor.Branca, this));
+            ColocarNovaPeca('F', 2, new Peao(Tabuleiro, Cor.Branca, this));
+            ColocarNovaPeca('G', 2, new Peao(Tabuleiro, Cor.Branca, this));
+            ColocarNovaPeca('H', 2, new Peao(Tabuleiro, Cor.Branca, this));
 
 
             ColocarNovaPeca('A', 8, new Torre(Tabuleiro, Cor.Preta));
@@ -300,14 +325,14 @@ namespace Xadrez_Console.xadrez
             ColocarNovaPeca('F', 8, new Bispo(Tabuleiro, Cor.Preta));
             ColocarNovaPeca('G', 8, new Cavalo(Tabuleiro, Cor.Preta));
             ColocarNovaPeca('H', 8, new Torre(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('A', 7, new Peao(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('B', 7, new Peao(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('C', 7, new Peao(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('D', 7, new Peao(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('E', 7, new Peao(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('F', 7, new Peao(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('G', 7, new Peao(Tabuleiro, Cor.Preta));
-            ColocarNovaPeca('H', 7, new Peao(Tabuleiro, Cor.Preta));
+            ColocarNovaPeca('A', 7, new Peao(Tabuleiro, Cor.Preta, this));
+            ColocarNovaPeca('B', 7, new Peao(Tabuleiro, Cor.Preta, this));
+            ColocarNovaPeca('C', 7, new Peao(Tabuleiro, Cor.Preta, this));
+            ColocarNovaPeca('D', 7, new Peao(Tabuleiro, Cor.Preta, this));
+            ColocarNovaPeca('E', 7, new Peao(Tabuleiro, Cor.Preta, this));
+            ColocarNovaPeca('F', 7, new Peao(Tabuleiro, Cor.Preta, this));
+            ColocarNovaPeca('G', 7, new Peao(Tabuleiro, Cor.Preta, this));
+            ColocarNovaPeca('H', 7, new Peao(Tabuleiro, Cor.Preta, this));
         }
     }
 }
